@@ -17,10 +17,12 @@ import logging
 import mysql.connector
 # [START imports]
 from flask import Flask, render_template, request
+from flask_cors import CORS
 # [END imports]
 
 # [START create_app]
 app = Flask(__name__)
+CORS(app)
 # [END create_app]
 globals = {}
 
