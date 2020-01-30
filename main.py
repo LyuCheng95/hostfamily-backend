@@ -86,12 +86,28 @@ def person():
 @app.route('/attendance')
 def attendance():
     action = request.args.get('action')
-    ret = ''
+    ret = 'success'
+    date = request.args.get('date')
+    cursor = globals['conn'].cursor()
+    cursor.execute("SELECT * FROM attendance WHERE date='%s" % date)
+    currPerson = cursor.fetchall()
+    persons = map(lambda x: x[0], currPerson)
     if action == 'read':
-        cursor = globals['conn'].cursor()
-        cursor.execute("SELECT * FROM person")
-        result = cursor.fetchall()
-        ret = result
+        ret = currPerson
+    elif action == 'update':
+        data = request.args.get('data').split(';')
+        data = map(lambda x: x.split(','), data)
+        for record in data:
+            if record[0] in persons:
+                cursor = globals['conn'].cursor()
+                cursor.execute(
+                    "UPDATE attendance SET present=%d WHERE name='%s';" % (int(record[2]), record[0]))
+                globals['conn'].commit()
+            else:
+                cursor = globals['conn'].cursor()
+                cursor.execute(
+                    "INSERT INTO attendance (name, date, present) VALUES ('%s', '%s', %d);" % (record[0], record[1], int(record[2])))
+                globals['conn'].commit()
     return {'status': 1, 'message': str(ret)}
 
 
