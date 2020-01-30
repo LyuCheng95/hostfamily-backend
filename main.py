@@ -17,14 +17,15 @@ import logging
 import mysql.connector
 # [START imports]
 from flask import Flask, render_template, request
-from flask_cors import CORS
+# from flask_cors import CORS
 # [END imports]
 
 # [START create_app]
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
 # [END create_app]
 globals = {}
+
 
 @app.route('/testdb')
 def connect_db():
@@ -57,6 +58,43 @@ def register():
     return {'status': 1, 'message': 'registration successful'}
 
 
+@app.route('/person')
+def person():
+    action = request.args.get('action')
+    ret = 'success'
+    if action == 'read':
+        cursor = globals['conn'].cursor()
+        cursor.execute("SELECT * FROM person")
+        result = cursor.fetchall()
+        ret = result
+    elif action == 'add':
+        name = request.args.get('name')
+        role = request.args.get('role')
+        cursor = globals['conn'].cursor()
+        cursor.execute(
+            "INSERT INTO person (name, role) VALUES ('%s', '%s');" % (name, role))
+        globals['conn'].commit()
+    elif action == 'delete':
+        name = request.args.get('name')
+        cursor = globals['conn'].cursor()
+        cursor.execute(
+            "DELETE FROM person WHERE name='%s';" % name)
+        globals['conn'].commit()
+    return {'status': 1, 'message': str(ret)}
+
+
+@app.route('/attendance')
+def attendance():
+    action = request.args.get('action')
+    ret = ''
+    if action == 'read':
+        cursor = globals['conn'].cursor()
+        cursor.execute("SELECT * FROM person")
+        result = cursor.fetchall()
+        ret = result
+    return {'status': 1, 'message': str(ret)}
+
+
 @app.route('/login')
 def login():
     username = request.args.get('username')
@@ -74,15 +112,21 @@ def login():
         else:
             return {'status': 0, 'message': 'wrong password'}
 
+
 @app.before_first_request
 def before_first_request_func():
     connection = mysql.connector.connect(
         host='34.70.134.1', database='hostfamily', user='root', password='1122338899')
     globals['conn'] = connection
 
+
 @app.errorhandler(500)
 def server_error(e):
     # Log the error and stacktrace.
     logging.exception('An error occurred during a request.')
     return 'An internal error occurred.', 500, str(e)
+
+
+if __name__ == '__main__':
+    app.run()
 # [END app]
