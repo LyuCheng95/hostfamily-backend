@@ -17,12 +17,12 @@ import logging
 import mysql.connector
 # [START imports]
 from flask import Flask, render_template, request
-from flask_cors import CORS
+# from flask_cors import CORS
 # [END imports]
 
 # [START create_app]
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
 # [END create_app]
 globals = {}
 
@@ -85,7 +85,7 @@ def person():
         cursor.execute(
             "DELETE FROM person WHERE name='%s';" % name)
         globals['conn'].commit()
-    return {'status': 1, 'message': str(ret)}
+    return {'status': 1, 'message': ret.encode('utf-8')}
 
 
 @app.route('/attendance')
@@ -120,7 +120,7 @@ def attendance():
                 stmt = "INSERT INTO attendance (person, date, present) VALUES ('%s', '%s', %d);" % (record[0], date, int(record[1]))
                 cursor.execute(stmt)
                 globals['conn'].commit()
-    return {'status': 1, 'message': str(ret)}
+    return {'status': 1, 'message': ret.encode('utf-8')}
 
 
 @app.route('/login')
