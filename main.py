@@ -85,7 +85,7 @@ def person():
         cursor.execute(
             "DELETE FROM person WHERE name='%s';" % name)
         globals['conn'].commit()
-    return {'status': 1, 'message': ret.encode('utf-8')}
+    return {'status': 1, 'message': str(ret.encode())}
 
 
 @app.route('/attendance')
@@ -99,7 +99,7 @@ def attendance():
     persons = list(map(lambda x: x[0], currPerson))
     if action == 'read':
         ret = ''
-        for record in result:
+        for record in currPerson:
             ret += record[0]
             ret += ','
             ret += record[1]
@@ -120,7 +120,7 @@ def attendance():
                 stmt = "INSERT INTO attendance (person, date, present) VALUES ('%s', '%s', %d);" % (record[0], date, int(record[1]))
                 cursor.execute(stmt)
                 globals['conn'].commit()
-    return {'status': 1, 'message': ret.encode('utf-8')}
+    return {'status': 1, 'message': str(ret.encode('utf-8'))}
 
 
 @app.route('/login')
