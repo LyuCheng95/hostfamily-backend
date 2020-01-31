@@ -27,7 +27,6 @@ app = Flask(__name__)
 # [END create_app]
 globals = {}
 
-
 @app.route('/testdb')
 def connect_db():
     connection = mysql.connector.connect(
@@ -150,6 +149,10 @@ def before_first_request_func():
         host='34.70.134.1', database='hostfamily', user='root', password='1122338899')
     globals['conn'] = connection
 
+@app.after_request
+def apply_caching(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 @app.errorhandler(500)
 def server_error(e):
