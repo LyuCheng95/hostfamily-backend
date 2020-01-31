@@ -87,7 +87,6 @@ def person():
             "DELETE FROM person WHERE name='%s';" % name)
         globals['conn'].commit()
     ret = json.dumps(str(ret.encode('utf-8')), ensure_ascii=False)
-    print(ret)
     return {'status': 1, 'message': ret}
 
 
@@ -123,7 +122,8 @@ def attendance():
                 stmt = "INSERT INTO attendance (person, date, present) VALUES ('%s', '%s', %d);" % (record[0], date, int(record[1]))
                 cursor.execute(stmt)
                 globals['conn'].commit()
-    return {'status': 1, 'message': u' '.join(ret).encode('utf-8')}
+    ret = json.dumps(str(ret.encode('utf-8')), ensure_ascii=False)
+    return {'status': 1, 'message': ret}
 
 
 @app.route('/login')
