@@ -66,7 +66,12 @@ def person():
         cursor = globals['conn'].cursor()
         cursor.execute("SELECT * FROM person")
         result = cursor.fetchall()
-        ret = result
+        ret = ''
+        for record in result:
+            ret += record[0]
+            ret += ','
+            ret += record[1]
+            ret += ';'
     elif action == 'add':
         name = request.args.get('name')
         role = request.args.get('role')
@@ -93,7 +98,14 @@ def attendance():
     currPerson = cursor.fetchall()
     persons = list(map(lambda x: x[0], currPerson))
     if action == 'read':
-        ret = currPerson
+        ret = ''
+        for record in result:
+            ret += record[0]
+            ret += ','
+            ret += record[1]
+            ret += ','
+            ret += record[2]
+            ret += ';'
     elif action == 'update':
         data = request.args.get('data').split(';')
         data = list(map(lambda x: x.split(','), data))
